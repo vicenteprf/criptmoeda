@@ -36,38 +36,42 @@ export function Home() {
   }, [offset]);
 
   async function getData() {
-    fetch(`https://rest.coincap.io/v3/assets?limit=10&offset=${offset}`).then(
-      (response) =>
-        response.json().then((data: DataProp) => {
-          const coinsData = data.data;
+    try {
+      const response = await fetch(
+        `https://rest.coincap.io/v3/assets?limit=10&offset=${offset}`,
+        {
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_COINCAP_API_KEY}`,
+          },
+        },
+      );
 
-          const price = Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-          });
+      const data: DataProp = await response.json();
 
-          const priceCompact = Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            notation: "compact",
-          });
+      const coinsData = data.data;
 
-          const formatedResult = coinsData.map((item) => {
-            const formated = {
-              ...item,
-              formatedPrice: price.format(Number(item.priceUsd)),
-              formatedMarket: priceCompact.format(Number(item.marketCapUsd)),
-              formatedVolume: priceCompact.format(Number(item.volumeUsd24Hr)),
-            };
+      const price = Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
 
-            return formated;
-          });
+      const priceCompact = Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        notation: "compact",
+      });
 
-          // console.log(formatedResult);
-          const listCoins = [...coins, ...formatedResult];
-          setCoins(listCoins);
-        }),
-    );
+      const formatedResult = coinsData.map((item) => ({
+        ...item,
+        formatedPrice: price.format(Number(item.priceUsd)),
+        formatedMarket: priceCompact.format(Number(item.marketCapUsd)),
+        formatedVolume: priceCompact.format(Number(item.volumeUsd24Hr)),
+      }));
+
+      setCoins((prev) => [...prev, ...formatedResult]);
+    } catch (error) {
+      console.log("Erro ao buscar moedas:", error);
+    }
   }
 
   function handleSubmit(e: FormEvent) {
@@ -75,7 +79,7 @@ export function Home() {
 
     if (input === "") return;
 
-    navigate(`/datail/${input}`);
+    navigate(`/detail/${input}`);
   }
 
   function handleGetMore() {
@@ -129,7 +133,7 @@ export function Home() {
                           if (!target.src.includes("lcw.nyc3")) {
                             target.src = `https://lcw.nyc3.cdn.digitaloceanspaces.com/production/currencies/32/${item.symbol.toLowerCase()}.webp`;
                           } else {
-                            target.src = "/default-crypto.png";
+                            target.src = "./default-crypto.png";
                           }
                         }}
                       />
