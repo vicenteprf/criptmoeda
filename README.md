@@ -1,4 +1,4 @@
-# Criptomoedas — Projeto Pessoal
+# Criptomoedas
 
 Este é um projeto desenvolvido durante o curso de React, onde criei uma pequena aplicação para visualizar informações sobre criptomoedas. O objetivo principal foi praticar conceitos de React, TypeScript e Vite, além de aprender sobre requisições a APIs externas e organização de componentes.
 
